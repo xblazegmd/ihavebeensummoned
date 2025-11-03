@@ -11,3 +11,5 @@ This is all I can think abt to add in the README. Oh wait...
 I kinda went overkill with the legal stuff... (I even added a freaking Privacy Policy ;-;). But anyways the point is, this program interacts with the Geometry Dash servers. To use it you need a GD account. Therefore, you are bound by the GD Terms of Service. I am not resposible for any violation to the ToS commited by the player specifically using this program.
 
 RobTop, if you're seeing this, and don't like this program, just tell me and I'll private this GitHub repo
+
+:)
