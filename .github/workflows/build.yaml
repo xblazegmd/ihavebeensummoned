@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Python setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13.3"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build program (PyInstaller)
+        run: |
+          pyinstaller --windowed --icon=icons/IHBS_icon.icns main.py -n "I Have Been Summoned"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: IHaveBeenSummoned-macos
+          path: dist/

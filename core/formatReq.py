@@ -26,7 +26,7 @@ def formatKeyValuePairs(string: str, map: dict[str, str] | None = None, separato
 
     return result
 
-def formatCommentObject(string: str) -> dict[str, str]:
+def formatCommentObject(string: str) -> list[dict[str, str]]:
     """
     Not to be confused with a comment string
 
