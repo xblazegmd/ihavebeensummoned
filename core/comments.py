@@ -114,7 +114,7 @@ def uploadComment(levelID: str, comment: str) -> int:
     commentEncoded = base64.urlsafe_b64encode(comment.encode()).decode()
     percent = 0
     
-    # First we need to generate the checksum (chk)
+    # First we need to generate the chk
     checksum = generateChk(values=[username, commentEncoded, levelID, percent], salt="0xPT6iUrtws0J", key="29481")
 
     # Specify parameters

@@ -48,7 +48,7 @@ def generateChk(values: list[int | str] = [], key: str = "", salt: str = "") -> 
     """
     Many request's in the GD servers need this thing called a checksum.
     
-    A checksum (CHK) is used as a security measure, to verify that the request wasn't tampered with, and is legit.
+    A CHK (checksum according to ChatGPT) is used as a security measure, to verify that the request wasn't tampered with, and is legit.
     
     Now, GD's method of generating a checksum is:
     
