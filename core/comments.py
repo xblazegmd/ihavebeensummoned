@@ -1,0 +1,140 @@
+import base64
+import requests
+import sys
+import time
+
+from typing import Callable
+from utils import API, SECRET, notify
+from .formatReq import *
+from .saveFile import loadData
+from .security import *
+
+def commentListenerLoop(id: str, onMention: Callable, cooldown: int = 5) -> None:
+    """
+    Start the "look for tags in comments" like loop
+    """
+    lastTags = []
+    
+    while True:
+        commentListener(id, lastTags, onMention)
+        time.sleep(cooldown)
+
+def commentListener(id: str, lastTags: list, onMention: Callable) -> None:
+    """
+    Get comments for a level ID and check for any tags
+    """
+    data = loadData()
+
+    possibleTags = data.get("tags") # Possible tags ppl can give me
+    assert possibleTags is not None # So pyright doesn't scream at me
+
+    params = {
+        "levelID": id,
+        "page": 0,
+        "secret": SECRET
+    }
+
+    # https://www.boomlings.com/database/getGJComments21.php
+    response = requests.post(API + "getGJComments21.php", data=params, headers={"User-Agent": ""})
+
+    if not (200 <= response.status_code < 300): # Not a success
+        print(f"[-] Failed to get comments (status code: {response.status_code})")
+        sys.exit(1)
+    
+    # Format response
+    commentsUnformatted = response.text.split("|") # This splits up every comment object in here
+
+    comments = []
+    for comment in commentsUnformatted:
+        comments.append(formatCommentObject(comment))
+    
+    # Now check for any tags
+    for c in comments:
+        cstr = c[0] # Comment string
+        userstr = c[1] # Author/User string
+
+        stringEncoded: str = cstr["comment"]
+        stringEncoded += "=" * (4 - (len(stringEncoded) % 4) - 1)
+
+        try:
+            string = base64.urlsafe_b64decode(stringEncoded).decode("ascii", errors="replace")
+        except Exception as e:
+            print(f"[-] Could not decode comment: {e} (base64: '{stringEncoded}')")
+            continue
+
+        # If I ever get tagged it'll notify me
+        if any(tag in string.lower() for tag in possibleTags):
+            if string in lastTags:
+                continue # Should have already been notified abt this comment
+
+            lastTags.append(string)
+
+            user = userstr["username"]
+
+            # Now I need to remove the tag
+            pieces = string.split(" ")
+            for piece in pieces:
+                if any(tag in piece.lower() for tag in possibleTags):
+                    pieces.remove(piece)
+                    break
+            desc = " ".join(pieces).strip()
+
+            print(f"[!] Mention from @{user}: '{desc}'")
+            notify(f"@{user} mentioned you", desc.replace("'", "'\\''"))
+
+            onMention(user, desc)
+
+lastUpload = 0
+cooldown = 15
+
+def uploadComment(levelID: str, comment: str) -> int:
+    """
+    Write and send a comment on the specified level
+
+    This code returns an `int` that will return 0 on success, and negative values on fail.
+    Here are some of the errors:
+    - -1: Unexpected error
+    - <-1: Cooldown (time remaining for next upload: (errCode * -1) - 1)
+    """
+    global lastUpload
+
+    now = time.time()
+    if now - lastUpload < cooldown:
+        # The error code for cooldown stuff is equal to the remaining time plus one, and negative
+        # Plus one to not conflict with the -1 error code
+        # So for example, error code -13 means you need to wait 12 seconds to comment
+        remaining = int(cooldown - (now - lastUpload)) or 1 # "or 1" will make it so if the remaining time is 0 it puts it as 1 to avoid bugs
+        return (remaining + 1) * -1
+
+    data = loadData()
+
+    username = data.get("username")
+    assert username is not None
+
+    commentEncoded = base64.urlsafe_b64encode(comment.encode()).decode()
+    percent = 0
+    
+    # First we need to generate the checksum (chk)
+    checksum = generateChk(values=[username, commentEncoded, levelID, percent], salt="0xPT6iUrtws0J", key="29481")
+
+    # Specify parameters
+    params = {
+        "accountID": data.get("accID"),
+        "gjp2": getGJP(),
+        "userName": username,
+        "comment": commentEncoded,
+        "levelID": int(levelID),
+        "percent": percent,
+        "chk": checksum,
+        "secret": SECRET,
+    }
+
+    # https://www.boomlings.com/database/uploadGJComment21.php
+    response = requests.post(API + "uploadGJComment21.php", data=params, headers={"User-Agent": ""})
+    
+    if not (200 <= response.status_code < 300) or response.text == "-1":
+        print(f"[-] Failed to upload comment (status code: {response.status_code}, response: {response.text})")
+        return -1
+
+    lastUpload = time.time()
+    return 0
