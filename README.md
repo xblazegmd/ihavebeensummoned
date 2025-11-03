@@ -5,6 +5,16 @@ Basically, this will check the comments in Geometry Dash's daily level, and if i
 
 Right now this only has a MacOS build since I'm on MacOS (but I play GD on my phone), but I plan to add a Windows build later (heck maybe Linux too).
 
+## Known issues
+- The character count label on the reply prompt is kinda bugged... idk why I didn't fix that first
+
+## Current roadmap before v1.0
+- [ ] Compatibility with Windows, MacOS, and Linux (currently only MacOS)
+- [ ] Fix any existing bugs with v0.1
+- [ ] Nicer UI
+- [ ] Better notifications
+- [ ] Whatever you want to add! Contributing is always amazing, and it helps a lot
+
 This is all I can think abt to add in the README. Oh wait...
 
 ## Legal stuff (so I don't get sued by RobTop lol)
