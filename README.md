@@ -23,4 +23,5 @@ I kinda went overkill with the legal stuff... (I even added a freaking Privacy P
 RobTop, if you're seeing this, and don't like this program, just tell me and I'll private this GitHub repo
 
 Also, shoutout to @GuineaPG (GD Username), they made pretty much the same program before me except I added an UI, replying, etc
+
 :)
