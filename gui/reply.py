@@ -38,8 +38,8 @@ class ReplyBox(tk.Toplevel):
         # The character label
         self.chatLabelVar = tk.StringVar()
 
-        self.charLabel = ttk.Label(self, text="0/100", anchor="w")
-        self.charLabel.pack(padx=(0, 360))
+        self.charLabel = ttk.Label(self, text="00/100")
+        self.charLabel.pack(padx=(0, 340))
 
         # Reply button
         self.replyBt = ttk.Button(self, text="Reply", command=self.uploadComment, state=tk.DISABLED)
