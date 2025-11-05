@@ -67,10 +67,10 @@ class DeveloperMode(tk.Toplevel):
 
     def testUpdateLoop(self) -> None:
         while True:
-            self.updateLogs()
+            self.log()
             time.sleep(1)
 
-    def updateLogs(self) -> None:
+    def log(self) -> None:
         self.logs.configure(state=tk.NORMAL)
         self.logs.insert(tk.END, f"[{self.getUptime()}] Log\n")
         self.logs.see(tk.END)
