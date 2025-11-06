@@ -79,9 +79,6 @@ def commentListener(id: str, lastTags: list, onMention: Callable) -> None:
                     break
             desc = " ".join(pieces).strip()
 
-            print(f"[!] Mention from @{user}: '{desc}'")
-            notify(f"@{user} mentioned you", desc.replace("'", "'\\''"))
-
             onMention(user, desc)
 
 lastUpload = 0
