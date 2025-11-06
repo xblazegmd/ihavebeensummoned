@@ -3,9 +3,10 @@ import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
 import time
-
 from threading import Thread
 from typing import Callable
+
+from .prompts import Prompts
 
 class DeveloperMode(tk.Toplevel):
     def __init__(self, master, onMention: Callable) -> None:
@@ -25,28 +26,34 @@ class DeveloperMode(tk.Toplevel):
         self.uptime = ttk.Label(self, text="Uptime: 00:00:00")
         self.uptime.pack(pady=(0, 5))
 
-        connectedFrame = ttk.Frame(self)
-        connectedFrame.pack(pady=(0, 5))
-
-        connectedLabel = ttk.Label(connectedFrame, text="Connected: null")
-        connectedLabel.pack(side=tk.LEFT)
-
-        connectedBt = ttk.Button(connectedFrame, text="Connect")
-        connectedBt.pack(side=tk.RIGHT)
+        connected = ttk.Label(self, text="Connected: null")
+        connected.pack(pady=(0, 5))
 
         # Logs
         self.logs = scrolledtext.ScrolledText(self, wrap=tk.WORD, width=100, height=10, state=tk.DISABLED)
         self.logs.pack(pady=(0, 5))
 
         # Actions
-        actionsFrame = ttk.Frame(self)
-        actionsFrame.pack(pady=(0, 5))
+        actions = ttk.Frame(self)
+        actions.pack(pady=(0, 5))
 
-        emulateBt = ttk.Button(actionsFrame, text="Emulate mention", command=self.emulateMention)
-        emulateBt.pack(side=tk.LEFT, padx=5)
+        emulateBt = ttk.Button(actions, text="Emulate mention", width=12, command=self.emulateMention)
+        emulateBt.grid(row=0, column=0)
 
-        promptBt = ttk.Button(actionsFrame, text="Open Prompt")
-        promptBt.pack(side=tk.LEFT, padx=5)
+        promptBt = ttk.Button(actions, text="Open Prompt", width=12, command=self.openPrompt)
+        promptBt.grid(row=0, column=1)
+
+        connectBt = ttk.Button(actions, text="Connect to level", width=12)
+        connectBt.grid(row=0, column=2)
+
+        configBt = ttk.Button(actions, text="Configuration", width=12)
+        configBt.grid(row=1, column=0)
+
+        eventlogBt = ttk.Button(actions, text="Toggle event logs", width=12)
+        eventlogBt.grid(row=1, column = 1)
+        
+        reloadBt = ttk.Button(actions, text="Reload UI", width=12)
+        reloadBt.grid(row=1, column=2)
 
         Thread(target=self.updateUptime, daemon=True).start()
         Thread(target=self.testUpdateLoop, daemon=True).start()
@@ -112,6 +119,9 @@ class DeveloperMode(tk.Toplevel):
         ]
 
         self.onMention(username, random.choice(msgs))
+
+    def openPrompt(self) -> None:
+        Prompts(self.master)
 
     def updateUptime(self) -> None:
         while True:

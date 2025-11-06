@@ -4,7 +4,7 @@ import sys
 import time
 
 from typing import Callable
-from utils import API, SECRET, notify
+from utils import API, SECRET
 from .formatReq import *
 from .saveFile import loadData
 from .security import *

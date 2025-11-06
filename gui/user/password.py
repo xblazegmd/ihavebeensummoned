@@ -7,8 +7,9 @@ from core.user import logIn
 from utils import changeFontSize
 
 class PasswordPrompt(tk.Toplevel):
-    def __init__(self, master) -> None:
+    def __init__(self, master, disabled: bool=False) -> None:
         super().__init__(master)
+        self.disabled = disabled
         self.data = loadData()
         self.username = self.data.get("username")
 
@@ -47,6 +48,9 @@ class PasswordPrompt(tk.Toplevel):
             self.visBt.config(text="H")
 
     def logIn(self):
+        if self.disabled:
+            return
+
         password = self.password.get()
 
         if password == "":
@@ -72,4 +76,8 @@ class PasswordPrompt(tk.Toplevel):
             self.destroy()
 
     def onClose(self) -> None:
+        if self.disabled:
+            self.destroy()
+            return
+
         self.master.destroy()
