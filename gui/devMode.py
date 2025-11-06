@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
@@ -51,7 +52,66 @@ class DeveloperMode(tk.Toplevel):
         Thread(target=self.testUpdateLoop, daemon=True).start()
 
     def emulateMention(self) -> None:
-        self.onMention("Example User", "This is just a test")
+        # Username generation
+        pre = [
+            "Clubstep",
+            "RobTop",
+            "Amazing",
+            "Xblaze",
+            "TheReal",
+            "Vector",
+            "Fingerdash",
+            "Deadlocked",
+            "Electroman",
+            "Extreme",
+            "Demon"
+        ]
+        suf = [
+            "Fanatic",
+            "Dasher",
+            "Lover",
+            "Bean",
+            "X",
+            "XD",
+            "Slayer",
+            "CantLetGo",
+            "NonSense",
+            "Step",
+            "Woah",
+            "Demon",
+            "What"
+        ]
+        username = random.choice(pre) + random.choice(suf) + str(random.randint(0, 5000))
+
+        # Random message
+        msgs = [
+            "how are you?",
+            "truth or dare",
+            "how was your day?",
+            "lol",
+            "really?",
+            "idrk",
+            "what",
+            "xd",
+            "im fine, wbu?",
+            "woah",
+            "there's no way that's true",
+            "WHAT",
+            "are you ok?",
+            "i can't believe it!",
+            "IKR ;-;",
+            ";-;",
+            "ToT",
+            ":)",
+            ">:)",
+            "uhm...",
+            "heck no",
+            "screw you",
+            "no u",
+            "uno reverse"
+        ]
+
+        self.onMention(username, random.choice(msgs))
 
     def updateUptime(self) -> None:
         while True:
