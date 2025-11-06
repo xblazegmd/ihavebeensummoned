@@ -56,7 +56,7 @@ class DeveloperMode(tk.Toplevel):
         reloadBt.grid(row=1, column=2)
 
         Thread(target=self.updateUptime, daemon=True).start()
-        Thread(target=self.testUpdateLoop, daemon=True).start()
+        # Thread(target=self.testUpdateLoop, daemon=True).start() # Uncomment to test window logs
 
     def emulateMention(self) -> None:
         # Username generation
