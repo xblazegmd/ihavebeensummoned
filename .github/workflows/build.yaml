@@ -13,13 +13,13 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Python setup
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13.3"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: |
@@ -28,17 +28,24 @@ jobs:
 
       - name: Build program (PyInstaller)
         run: |
-          pyinstaller --windowed --icon=icons/IHBS_icon.icns main.py -n "I Have Been Summoned"
+          pyinstaller --windowed --icon=icons/IHBS_icon.icns --distpath dist/ main.py -n "I Have Been Summoned"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: IHaveBeenSummoned-macos
-          path: dist/
-
-      - name: Create release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist/I\ Have\ Been\ Summoned.app
+        asset_name: ihbs_${{ github.ref }}_macOS.app
+        asset_content_type: application/octet-stream
