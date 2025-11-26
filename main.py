@@ -1,8 +1,24 @@
 import _tkinter
+import logging
 from gui import App
 
 def main() -> None:
     try:
+        # Setup logging
+        logger = logging.getLogger("ihbs")
+        logger.setLevel(logging.DEBUG)
+
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter(
+            fmt="[%(asctime)s] %(levelname)s: %(message)s {at %(filename)s:%(lineno)d}",
+            datefmt="%Y-%m-%d %H:%M:%S"
+        )
+        consoleHandler.setFormatter(formatter)
+
+        logger.addHandler(consoleHandler)
+
         root = App()
         root.mainloop()
     except _tkinter.TclError as e:

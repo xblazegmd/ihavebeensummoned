@@ -3,7 +3,7 @@ from tkinter import messagebox, ttk
 from threading import Thread
 
 from core.comments import commentListenerLoop
-from utils import getDailyLevel
+from utils import getDailyLevel, logger
 from .devMode import DeveloperMode
 from .listener import ListenerWindow
 
@@ -53,7 +53,7 @@ class MainWindow:
 
         if not self.devMode:
             self.button.config(text="Listener Running", state=tk.DISABLED)
-            print(f"[+] Listener started on ID: {self.dailyID}")
+            logger.info(f"[+] Listener started on ID: {self.dailyID}")
             messagebox.showinfo("Listener started", f"Listener is currently running on ID: {self.dailyID}")
 
         self.root.withdraw()

@@ -2,11 +2,14 @@ import random
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
+import logging
 import time
 from threading import Thread
 from typing import Callable
 
+from core.devModeLogHandler import DevModeLogHandler
 from .prompts import Prompts
+from utils import logger, notify
 
 class DeveloperMode(tk.Toplevel):
     def __init__(self, master, onMention: Callable) -> None:
@@ -32,6 +35,16 @@ class DeveloperMode(tk.Toplevel):
         # Logs
         self.logs = scrolledtext.ScrolledText(self, wrap=tk.WORD, width=100, height=10, state=tk.DISABLED)
         self.logs.pack(pady=(0, 5))
+
+        # Log styling
+        self.logs.tag_config("WARNING", foreground="yellow")
+        self.logs.tag_config("ERROR", foreground="red")
+        self.logs.tag_config("CRITICAL", foreground="red", underline=True)
+
+        # Setup logging
+        logHandler = DevModeLogHandler(self.log)
+        logHandler.setLevel(logging.DEBUG)
+        logger.addHandler(logHandler)
 
         # Actions
         actions = ttk.Frame(self)
@@ -118,7 +131,11 @@ class DeveloperMode(tk.Toplevel):
             "uno reverse"
         ]
 
-        self.onMention(username, random.choice(msgs))
+        msg = random.choice(msgs)
+        logger.info(f"Mention by {username}: {msg}")
+        notify(f"@{username} mentioned you", msg.replace("'", "'\\''"))
+
+        self.onMention(username, random.choice(msg))
 
     def openPrompt(self) -> None:
         Prompts(self.master)
@@ -137,12 +154,12 @@ class DeveloperMode(tk.Toplevel):
 
     def testUpdateLoop(self) -> None:
         while True:
-            self.log()
+            logger.info("This is a test log")
             time.sleep(1)
 
-    def log(self) -> None:
+    def log(self, msg: str, level: str="DEBUG") -> None:
         self.logs.configure(state=tk.NORMAL)
-        self.logs.insert(tk.END, f"[{self.getUptime()}] Log\n")
+        self.logs.insert(tk.END, msg + "\n", (level,))
         self.logs.see(tk.END)
         self.logs.configure(state=tk.DISABLED)
 

@@ -1,3 +1,4 @@
+import logging
 import requests
 import subprocess
 import sys
@@ -5,6 +6,8 @@ from tkinter import font, TclError
 from tkinter.ttk import Label
 
 from core import formatReq
+
+logger = logging.getLogger("ihbs")
 
 API = "http://www.boomlings.com/database/" # Yes guys, GD runs on boomlings.com
 SECRET = "Wmfd2893gb7" # RobTop's secret key for server requests (that is not a secret anymore lol)
@@ -33,7 +36,7 @@ def getDailyLevel() -> str:
     response = requests.post(API + "getGJLevels21.php", data=params, headers={"User-Agent": ""})
 
     if not (200 <= response.status_code < 300): # Not a success
-        print(f"[-] Failed to get daily level info (status code: {response.status_code})")
+        logger.error(f"Failed to get daily level info (status code: {response.status_code})")
         sys.exit(1)
     
     # Format response

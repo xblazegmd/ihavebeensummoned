@@ -36,9 +36,6 @@ class ListenerWindow(tk.Toplevel):
         self.replyBt.pack(pady=10)
     
     def addMention(self, user: str, comment: str) -> None:
-        print(f"[!] Mention from @{user}: '{comment}'")
-        notify(f"@{user} mentioned you", comment.replace("'", "'\\''"))
-
         self.mentions.insert("", tk.END, values=(user, comment))
     
     def onItemSelected(self, _) -> None:
