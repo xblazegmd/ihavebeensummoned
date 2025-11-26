@@ -1,4 +1,5 @@
 # I Have Been Summoned
+###### See docs/branch.md for info on the current branch
 This is a project I made for fun. 
 
 Basically, this will check the comments in Geometry Dash's daily level, and if it finds any specific tags in any comment (like, for example, @xblazegmd (that's my GD username)), it will notify you.
