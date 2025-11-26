@@ -45,7 +45,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/I\ Have\ Been\ Summoned.app
-        asset_name: ihbs_${{ github.ref }}_macOS.app
-        asset_content_type: application/octet-stream
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/I\ Have\ Been\ Summoned.app
+          asset_name: ihbs_${{ github.ref }}_macOS.app
+          asset_content_type: application/octet-stream
