@@ -30,12 +30,10 @@ jobs:
         run: |
           pyinstaller --windowed --icon=icons/IHBS_icon.icns --distpath dist/ main.py -n "I Have Been Summoned"
       
-      - name: List files
+      - name: Prepare .app bundle
         run: |
-          echo "root"
-          ls -R .
-          echo "dist"
-          ls -R dist || echo "no dist directory"
+          cd dist
+          zip -r "I Have Been Summoned-macos.zip" "I Have Been Summoned.app"
       
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -50,4 +48,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: dist/*
+          files: dist/"I Have Been Summoned-macos.zip"
