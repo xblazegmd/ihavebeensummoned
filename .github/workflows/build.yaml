@@ -38,11 +38,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: IHBS_macos
-          path: ./dist/I\ Have\ Been\ Summoned.app
+          path: dist/
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref }}
           name: ${{ steps.version.outputs.VER }}
-          files: ./dist/I\ Have\ Been\ Summoned.app
+          files: dist/
