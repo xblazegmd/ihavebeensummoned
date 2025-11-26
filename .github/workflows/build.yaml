@@ -33,7 +33,7 @@ jobs:
       - name: Prepare .app bundle
         run: |
           cd dist
-          zip -r "I Have Been Summoned-macos.zip" "I Have Been Summoned.app"
+          zip -r "ihavebeensummoned_macos.zip" "I Have Been Summoned.app"
       
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -42,10 +42,4 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-      
-      - name: Upload asset
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: dist/"I Have Been Summoned-macos.zip"
+          files: dist/ihavebeensummoned_macos.zip
