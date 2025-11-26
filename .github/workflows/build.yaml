@@ -30,6 +30,13 @@ jobs:
         run: |
           pyinstaller --windowed --icon=icons/IHBS_icon.icns --distpath dist/ main.py -n "I Have Been Summoned"
       
+      - name: List files
+        run: |
+          echo "root"
+          ls -R .
+          echo "dist"
+          ls -R dist || echo "no dist directory"
+      
       - name: Create release
         uses: softprops/action-gh-release@v2
         env:
