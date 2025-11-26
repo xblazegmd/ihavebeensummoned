@@ -25,24 +25,22 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
-      
-      - name: Get release version
-        id: version
-        run: echo "VER=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Build program (PyInstaller)
         run: |
           pyinstaller --windowed --icon=icons/IHBS_icon.icns --distpath dist/ main.py -n "I Have Been Summoned"
-        
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: IHBS_macos
-          path: dist/
-
-      - name: Create Release
+      
+      - name: Create release
         uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          name: ${{ steps.version.outputs.VER }}
-          files: dist/
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+      
+      - name: Upload asset
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: dist/*
