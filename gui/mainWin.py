@@ -3,12 +3,14 @@ from tkinter import messagebox, ttk
 from threading import Thread
 
 from core.comments import commentListenerLoop
-from utils import getDailyLevel
+from utils import getDailyLevel, logger
+from .devMode import DeveloperMode
 from .listener import ListenerWindow
 
 class MainWindow:
-    def __init__(self, root: tk.Tk) -> None:
+    def __init__(self, root: tk.Tk, devMode: bool) -> None:
         self.root = root
+        self.devMode = devMode
 
         self.root.title("I have been summoned")
         self.root.geometry("300x200")
@@ -23,11 +25,17 @@ class MainWindow:
         Thread(target=self.getDaily, daemon=True).start()
     
     def getDaily(self) -> None:
+        if self.devMode:
+            self.dailyID = "null_dev_mode"
+            self.label.config(text="ID: null_dev_mode")
+            self.button.config(state=tk.ACTIVE)
+            return
+
         try:
             self.dailyID = getDailyLevel()
         
             self.label.config(text=f"ID: {self.dailyID}")
-            self.button.config(text="Start Listener", state=tk.NORMAL)
+            self.button.config(state=tk.ACTIVE)
         except Exception as e:
             self.label.config(text=f"Error: {e}")
     
@@ -35,11 +43,20 @@ class MainWindow:
         listenerWindow = ListenerWindow(self.root, self.dailyID)
         listenerWindow.withdraw()
         
-        Thread(target=commentListenerLoop, args=(self.dailyID, listenerWindow.addMention), daemon=True).start()
+        devModeWin = None
+        
+        if self.devMode:
+            devModeWin = DeveloperMode(self.root, listenerWindow.addMention)
+            devModeWin.withdraw()
+        else:
+            Thread(target=commentListenerLoop, args=(self.dailyID, listenerWindow.addMention), daemon=True).start()
 
-        self.button.config(text="Listener Running", state=tk.DISABLED)
-        print(f"[+] Listener started on ID: {self.dailyID}")
-        messagebox.showinfo("Listener started", f"Listener is currently running on ID: {self.dailyID}")
+        if not self.devMode:
+            self.button.config(text="Listener Running", state=tk.DISABLED)
+            logger.info(f"Listener started on ID: {self.dailyID}")
+            messagebox.showinfo("Listener started", f"Listener is currently running on ID: {self.dailyID}")
 
         self.root.withdraw()
         listenerWindow.deiconify()
+        if devModeWin is not None:
+            devModeWin.deiconify()

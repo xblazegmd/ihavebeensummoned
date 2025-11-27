@@ -10,7 +10,6 @@ from typing import Any
 # If just running as "python main.py", default to where main.py is
 def getRoot() -> Path:
     if getattr(sys, "frozen", False):
-        print("1")
         root = Path.home() / "Library" / "Application Support" / "IHaveBeenSummoned"
     else:
         root = Path(sys.argv[0]).resolve().parent

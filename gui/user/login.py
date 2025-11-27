@@ -7,8 +7,9 @@ from core.security import saveGJP, generateGJP
 from utils import changeFontSize
 
 class LoginWindow(tk.Toplevel):
-    def __init__(self, master) -> None:
+    def __init__(self, master, disabled: bool=False) -> None:
         super().__init__(master)
+        self.disabled = disabled
 
         self.title("Log In")
         self.geometry("400x250")
@@ -54,6 +55,9 @@ class LoginWindow(tk.Toplevel):
             self.visBt.config(text="H")
     
     def logIn(self) -> None:
+        if self.disabled:
+            return
+
         username = self.username.get()
         password = self.password.get()
 
@@ -79,4 +83,8 @@ class LoginWindow(tk.Toplevel):
             self.destroy()
     
     def onClose(self) -> None:
+        if self.disabled:
+            self.destroy()
+            return
+
         self.master.destroy()

@@ -5,8 +5,9 @@ from core.saveFile import updateData
 from utils import setBold
 
 class TagPrompt(tk.Toplevel):
-    def __init__(self, master):
+    def __init__(self, master, disabled: bool=False):
         super().__init__(master)
+        self.disabled = disabled
         self.tags: list[str] = []
 
         self.title("Tags")
@@ -84,10 +85,17 @@ class TagPrompt(tk.Toplevel):
             self.tagsLabelVar.set(", ".join(self.tags))
     
     def setTags(self) -> None:
+        if self.disabled:
+            return
+
         if not messagebox.askokcancel("Tags", f"The tags will be set to: {', '.join(self.tags)}"):
             return
         updateData(tags=self.tags)
         self.destroy()
     
     def onClose(self) -> None:
+        if self.disabled:
+            self.destroy()
+            return
+
         self.master.destroy()

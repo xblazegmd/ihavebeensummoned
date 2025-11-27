@@ -1,6 +1,7 @@
 import tkinter as tk
 
 from tkinter import ttk, messagebox
+from utils import notify
 from .reply import ReplyBox
 
 class ListenerWindow(tk.Toplevel):
@@ -37,7 +38,7 @@ class ListenerWindow(tk.Toplevel):
     def addMention(self, user: str, comment: str) -> None:
         self.mentions.insert("", tk.END, values=(user, comment))
     
-    def onItemSelected(self, event) -> None:
+    def onItemSelected(self, _) -> None:
         self.replyBt.config(state=tk.ACTIVE)
     
     def replyToMention(self) -> None:

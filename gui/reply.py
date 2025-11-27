@@ -4,10 +4,11 @@ from tkinter import ttk, messagebox
 from core.comments import uploadComment
 
 class ReplyBox(tk.Toplevel):
-    def __init__(self, master, user: str, levelID: str) -> None:
+    def __init__(self, master, user: str, levelID: str, disabled: bool=False) -> None:
         super().__init__(master)
         self.user = user
         self.levelID = levelID
+        self.disabled = disabled
         self.chars = 0
 
         self.title(f"Reply to @{self.user}")
@@ -48,6 +49,9 @@ class ReplyBox(tk.Toplevel):
         self.characterCountUpdate()
     
     def uploadComment(self) -> None:
+        if self.disabled:
+            return
+        
         user = self.inputA.get()
         contents = self.inputBVar.get()
         comment = f"{user} {contents}"

@@ -4,7 +4,7 @@ import sys
 import time
 
 from typing import Callable
-from utils import API, SECRET, notify
+from utils import API, SECRET, notify, logger
 from .formatReq import *
 from .saveFile import loadData
 from .security import *
@@ -38,8 +38,8 @@ def commentListener(id: str, lastTags: list, onMention: Callable) -> None:
     response = requests.post(API + "getGJComments21.php", data=params, headers={"User-Agent": ""})
 
     if not (200 <= response.status_code < 300): # Not a success
-        print(f"[-] Failed to get comments (status code: {response.status_code})")
-        sys.exit(1)
+        logger.error(f"Failed to get comments (status code: {response.status_code})")
+        return # For some reason this was "sys.exit(1)" before like what
     
     # Format response
     commentsUnformatted = response.text.split("|") # This splits up every comment object in here
@@ -59,7 +59,7 @@ def commentListener(id: str, lastTags: list, onMention: Callable) -> None:
         try:
             string = base64.urlsafe_b64decode(stringEncoded).decode("ascii", errors="replace")
         except Exception as e:
-            print(f"[-] Could not decode comment: {e} (base64: '{stringEncoded}')")
+            logger.error(f"Could not decode comment: {e} (base64: '{stringEncoded}')")
             continue
 
         # If I ever get tagged it'll notify me
@@ -79,9 +79,8 @@ def commentListener(id: str, lastTags: list, onMention: Callable) -> None:
                     break
             desc = " ".join(pieces).strip()
 
-            print(f"[!] Mention from @{user}: '{desc}'")
+            logger.info(f"Mention by {user}: {desc}")
             notify(f"@{user} mentioned you", desc.replace("'", "'\\''"))
-
             onMention(user, desc)
 
 lastUpload = 0
@@ -133,7 +132,7 @@ def uploadComment(levelID: str, comment: str) -> int:
     response = requests.post(API + "uploadGJComment21.php", data=params, headers={"User-Agent": ""})
     
     if not (200 <= response.status_code < 300) or response.text == "-1":
-        print(f"[-] Failed to upload comment (status code: {response.status_code}, response: {response.text})")
+        logger.error(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
         return -1
 
     lastUpload = time.time()

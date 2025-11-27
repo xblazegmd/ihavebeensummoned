@@ -1,3 +1,4 @@
+import os
 import sys
 import tkinter as tk
 from tkinter import messagebox
@@ -12,22 +13,29 @@ class App(tk.Tk):
         super().__init__()
         self.withdraw()
 
-        self.status = self.getStatus() # Temporary to test different login windows. -1 = First use + Login, 0 = Login, 1+ = Password check
+        self.status = self.getStatus() # -2 = Developer mode, -1 = First use + Login, 0 = Login, 1+ = Password check
+        self.devMode = False
         
         if self.status == 1:
+            # User's already logged in, ask for password
             passPrompt = PasswordPrompt(self)
             self.wait_window(passPrompt)
         elif self.status == 0:
+            # User's not logged in, log in
             loginWin = LoginWindow(self)
             self.wait_window(loginWin)
         elif self.status == -1:
+            # User just started using the app, show disclaimer and log in
             if not messagebox.askokcancel("I Have Been Summoned", "By using this program you are agreeing to Geometry Dash's Terms of Service, and our Privacy Policy (I went overkill with the legal stuff lol)"):
                 self.destroy()
             loginWin = LoginWindow(self)
             self.wait_window(loginWin)
+        elif self.status == -2:
+            # User's on developer mode
+            self.devMode = True
         
         data = loadData()
-        if data.get("tags") is None:
+        if data.get("tags") is None and not self.devMode:
             tagPrompt = TagPrompt(self)
             self.wait_window(tagPrompt)
         
@@ -35,9 +43,13 @@ class App(tk.Tk):
     
     def showMain(self) -> None:
         self.deiconify()
-        MainWindow(self)
+        MainWindow(self, self.devMode)
     
     def getStatus(self) -> int:
+        devMode = os.getenv("IHBS_DEV_MODE", "false")
+        if devMode == "true":
+            return -2 # Developer mode: ON
+
         data = loadData()
 
         if data.get("nonexistent") is not None or data.get("corrupted") is not None:
