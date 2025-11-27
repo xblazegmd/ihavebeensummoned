@@ -1,7 +1,6 @@
 import logging
 import requests
 import subprocess
-import sys
 from tkinter import font, TclError
 from tkinter.ttk import Label
 
@@ -37,7 +36,7 @@ def getDailyLevel() -> str:
 
     if not (200 <= response.status_code < 300): # Not a success
         logger.error(f"Failed to get daily level info (status code: {response.status_code})")
-        sys.exit(1)
+        return "-1" # Why the heck did I put "sys.exit(1)" before? What's wrong with me???
     
     # Format response
     daily = response.text.split("#")[0].split("|")[0] # TLDR; get the first level in the response

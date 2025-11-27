@@ -53,7 +53,7 @@ class MainWindow:
 
         if not self.devMode:
             self.button.config(text="Listener Running", state=tk.DISABLED)
-            logger.info(f"[+] Listener started on ID: {self.dailyID}")
+            logger.info(f"Listener started on ID: {self.dailyID}")
             messagebox.showinfo("Listener started", f"Listener is currently running on ID: {self.dailyID}")
 
         self.root.withdraw()

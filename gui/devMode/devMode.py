@@ -1,6 +1,6 @@
 import random
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
+from tkinter import ttk, messagebox, scrolledtext, simpledialog
 
 import logging
 import os
@@ -10,16 +10,19 @@ import time
 from threading import Thread
 from typing import Callable
 
+from core.comments import commentListenerLoop
 from core.devModeLogHandler import DevModeLogHandler
 from core.saveFile import SAVEFILE
+from gui.listener import ListenerWindow
 from .prompts import Prompts
-from utils import logger, notify
+from utils import logger, notify, getDailyLevel
 
 class DeveloperMode(tk.Toplevel):
     def __init__(self, master, onMention: Callable) -> None:
         super().__init__(master)
         self.onMention = onMention
         self.startTime = time.time()
+        self.connected = None
 
         self.title("Developer Mode")
         self.geometry("550x300")
@@ -33,7 +36,7 @@ class DeveloperMode(tk.Toplevel):
         self.uptime = ttk.Label(self, text="Uptime: 00:00:00")
         self.uptime.pack(pady=(0, 5))
 
-        connected = ttk.Label(self, text="Connected: null")
+        connected = ttk.Label(self, text=f"Connected: {self.connected}")
         connected.pack(pady=(0, 5))
 
         # Logs
@@ -67,7 +70,7 @@ class DeveloperMode(tk.Toplevel):
         promptBt = ttk.Button(actions, text="Open Prompt", width=12, command=self.openPrompt)
         promptBt.grid(row=0, column=1)
 
-        connectBt = ttk.Button(actions, text="Connect to level", width=12)
+        connectBt = ttk.Button(actions, text="Connect to level", width=12, command=self.connectToLevel)
         connectBt.grid(row=0, column=2)
 
         configBt = ttk.Button(actions, text="Configuration", width=12, command=self.openConfig)
@@ -149,6 +152,36 @@ class DeveloperMode(tk.Toplevel):
 
     def openPrompt(self) -> None:
         Prompts(self.master)
+    
+    def connectToLevel(self) -> None:
+        if self.connected is not None:
+            logger.error(f"Already connected to level ID: {self.connected}")
+            messagebox.showerror("Error", f"Already connected to level ID: {self.connected}")
+            return
+
+        levelID = simpledialog.askstring("Connect to level", "Enter level ID (-1: Daily):", parent=self)
+        if levelID is None:
+            logger.error("No level ID provided.")
+            messagebox.showerror("Error", "No level ID provided.")
+            return
+
+        logger.debug(f"Level ID: {levelID}")
+
+        if levelID == "-1":
+            logger.debug("Fetching daily level ID")
+            levelID = getDailyLevel()
+            if levelID == "-1":
+                messagebox.showerror("Error", "Failed to get daily level ID.")
+                return
+            
+            logger.debug(f"Daily level ID: {levelID}")
+
+        self.connected = levelID
+
+        Thread(target=commentListenerLoop, args=(levelID, self.onMention), daemon=True).start()
+
+        logger.info(f"Listener started on ID: {levelID}")
+        messagebox.showinfo("Listener started", f"Listener is currently running on ID: {levelID}")
     
     def openConfig(self) -> None:
         subprocess.Popen(["open", str(SAVEFILE)])
