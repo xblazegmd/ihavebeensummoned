@@ -3,11 +3,15 @@ import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
 import logging
+import os
+import sys
+import subprocess
 import time
 from threading import Thread
 from typing import Callable
 
 from core.devModeLogHandler import DevModeLogHandler
+from core.saveFile import SAVEFILE
 from .prompts import Prompts
 from utils import logger, notify
 
@@ -66,17 +70,16 @@ class DeveloperMode(tk.Toplevel):
         connectBt = ttk.Button(actions, text="Connect to level", width=12)
         connectBt.grid(row=0, column=2)
 
-        configBt = ttk.Button(actions, text="Configuration", width=12)
+        configBt = ttk.Button(actions, text="Configuration", width=12, command=self.openConfig)
         configBt.grid(row=1, column=0)
 
-        eventlogBt = ttk.Button(actions, text="Toggle logs", width=12, command=self.toggleLogs)
-        eventlogBt.grid(row=1, column = 1)
+        self.eventlogBt = ttk.Button(actions, text="Disable logging", width=12, command=self.toggleLogs)
+        self.eventlogBt.grid(row=1, column = 1)
         
-        reloadBt = ttk.Button(actions, text="Reload UI", width=12)
+        reloadBt = ttk.Button(actions, text="Restart", width=12, command=self.restart)
         reloadBt.grid(row=1, column=2)
 
         Thread(target=self.updateUptime, daemon=True).start()
-        # Thread(target=self.testUpdateLoop, daemon=True).start() # Uncomment to test window logs
 
     def emulateMention(self) -> None:
         # Username generation
@@ -147,19 +150,34 @@ class DeveloperMode(tk.Toplevel):
     def openPrompt(self) -> None:
         Prompts(self.master)
     
+    def openConfig(self) -> None:
+        subprocess.Popen(["open", str(SAVEFILE)])
+    
     def toggleLogs(self) -> None:
         disabled = not logger.disabled
+
+        self.eventlogBt.config(text="Enable logging" if disabled else "Disable logging")
 
         # So the "LOGS: ____" message works I need to check the state before and after changing it
         # This is checked before since it won't log after
         if disabled:
-            logger.info("Logs: DISABLED")
+            logger.info("Logging: DISABLED")
         
         logger.disabled = disabled
 
         # This is checked after since it won't log before
         if not disabled:
-            logger.info("Logs: ENABLED")
+            logger.info("Logging: ENABLED")
+    
+    def restart(self) -> None:
+        if not messagebox.askyesno(
+            title="Are you sure?",
+            message="Do you want to restart the application?"
+        ):
+            return
+        
+        exe = sys.executable
+        os.execv(exe, [exe] + sys.argv)
 
     def updateUptime(self) -> None:
         while True:
@@ -172,11 +190,6 @@ class DeveloperMode(tk.Toplevel):
         m = int((elapsed % 3600) // 60)
         s = int(elapsed % 60)
         return f"{h:02d}:{m:02d}:{s:02d}"
-
-    def testUpdateLoop(self) -> None:
-        while True:
-            logger.info("This is a test log")
-            time.sleep(1)
 
     def log(self, msg: str, level: str="DEBUG") -> None:
         self.logs.configure(state=tk.NORMAL)

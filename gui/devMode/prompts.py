@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 from ..reply import ReplyBox
 from ..tagPrompt import TagPrompt
@@ -31,15 +31,31 @@ class Prompts(tk.Toplevel):
 
         passwordBt = ttk.Button(self, text="PasswordPrompt", command=self.openPasswordPrompt)
         passwordBt.pack(pady=(0, 5))
+    
+    def warnIfNotDisabled(self) -> bool:
+        if not self.disabled.get():
+            return messagebox.askyesno(
+                title="Warning",
+                message="Running enabled prompts with this method can cause unexpected behavior. Are you sure you want to continue?"
+            )
+        return True
 
     def openReplyBox(self) -> None:
+        if not self.warnIfNotDisabled():
+            return
         ReplyBox(self.master, "testuser", "0", disabled=self.disabled.get())
 
     def openTagPrompt(self) -> None:
+        if not self.warnIfNotDisabled():
+            return
         TagPrompt(self.master, disabled=self.disabled.get())
 
     def openLoginWindow(self) -> None:
+        if not self.warnIfNotDisabled():
+            return
         LoginWindow(self.master, disabled=self.disabled.get())
 
     def openPasswordPrompt(self) -> None:
+        if not self.warnIfNotDisabled():
+            return
         PasswordPrompt(self.master, disabled=self.disabled.get())
