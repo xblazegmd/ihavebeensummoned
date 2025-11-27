@@ -42,9 +42,16 @@ class DeveloperMode(tk.Toplevel):
         self.logs.tag_config("CRITICAL", foreground="red", underline=True)
 
         # Setup logging
-        logHandler = DevModeLogHandler(self.log)
-        logHandler.setLevel(logging.DEBUG)
-        logger.addHandler(logHandler)
+        self.logHandler = DevModeLogHandler(self.log)
+        self.logHandler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter(
+            fmt="[%(asctime)s] %(levelname)s: %(message)s",
+            datefmt="%H:%M:%S"
+        )
+        self.logHandler.setFormatter(formatter)
+        
+        logger.addHandler(self.logHandler)
 
         # Actions
         actions = ttk.Frame(self)
@@ -62,7 +69,7 @@ class DeveloperMode(tk.Toplevel):
         configBt = ttk.Button(actions, text="Configuration", width=12)
         configBt.grid(row=1, column=0)
 
-        eventlogBt = ttk.Button(actions, text="Toggle event logs", width=12)
+        eventlogBt = ttk.Button(actions, text="Toggle logs", width=12, command=self.toggleLogs)
         eventlogBt.grid(row=1, column = 1)
         
         reloadBt = ttk.Button(actions, text="Reload UI", width=12)
@@ -139,6 +146,20 @@ class DeveloperMode(tk.Toplevel):
 
     def openPrompt(self) -> None:
         Prompts(self.master)
+    
+    def toggleLogs(self) -> None:
+        disabled = not logger.disabled
+
+        # So the "LOGS: ____" message works I need to check the state before and after changing it
+        # This is checked before since it won't log after
+        if disabled:
+            logger.info("Logs: DISABLED")
+        
+        logger.disabled = disabled
+
+        # This is checked after since it won't log before
+        if not disabled:
+            logger.info("Logs: ENABLED")
 
     def updateUptime(self) -> None:
         while True:

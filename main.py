@@ -12,8 +12,8 @@ def main() -> None:
         consoleHandler.setLevel(logging.DEBUG)
 
         formatter = logging.Formatter(
-            fmt="[%(asctime)s] %(levelname)s: %(message)s {at %(filename)s:%(lineno)d}",
-            datefmt="%Y-%m-%d %H:%M:%S"
+            fmt="[%(asctime)s] %(levelname)s: %(message)s",
+            datefmt="%H:%M:%S"
         )
         consoleHandler.setFormatter(formatter)
 

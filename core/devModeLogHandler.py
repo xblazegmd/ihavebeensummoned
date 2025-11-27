@@ -5,8 +5,12 @@ class DevModeLogHandler(logging.Handler):
     def __init__(self, callback: Callable) -> None:
         super().__init__()
         self.callback = callback
+        self.enabled = True
     
     def emit(self, record: logging.LogRecord) -> None:
+        if not self.enabled:
+            return
+        
         level = "NOTSET"
         match record.levelno:
             case logging.DEBUG:
