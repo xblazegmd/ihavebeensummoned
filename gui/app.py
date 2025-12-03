@@ -1,4 +1,5 @@
 import os
+import requests
 import sys
 import tkinter as tk
 from tkinter import messagebox
@@ -12,6 +13,13 @@ class App(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.withdraw()
+
+        # Basic internet check
+        try:
+            requests.get("https://www.google.com")
+        except requests.ConnectionError:
+            messagebox.showerror("Error", "No internet connection found. Please connect to the internet and try again")
+            sys.exit(1)
 
         self.status = self.getStatus() # -2 = Developer mode, -1 = First use + Login, 0 = Login, 1+ = Password check
         self.devMode = False
