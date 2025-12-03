@@ -14,6 +14,7 @@ class App(tk.Tk):
         super().__init__()
         self.withdraw()
 
+        # Basic internet check
         try:
             requests.get("https://www.google.com")
         except requests.ConnectionError:
