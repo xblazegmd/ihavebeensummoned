@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+from core.errors import *
 from core.saveFile import loadData
 from core.security import saveGJP, generateGJP
 from core.user import logIn
-from utils import changeFontSize
+from utils import changeFontSize, logger
 
 class PasswordPrompt(tk.Toplevel):
     def __init__(self, master, disabled: bool=False) -> None:
@@ -61,19 +62,32 @@ class PasswordPrompt(tk.Toplevel):
             messagebox.showerror("Error", "Username was not found. Please reset your save file")
             return
 
-        status = logIn(self.username, password)
-
-        if status[0] == "-1":
-            messagebox.showerror("Error", "An unexpected error happened")
-        elif status[0] == "-2":
+        try:
+            status = logIn(self.username, password)
+        except NotFoundError:
             messagebox.showerror("Error", "The specified user does not exist")
-        elif status[0] == "-3":
+        except OperationFailedError:
             messagebox.showerror("Error", "Password is possibly incorrect. If this issue persists (even when the password is correct) report this issue to the GitHub")
+        except Exception as e:
+            logger.error(str(e))
+            messagebox.showerror("Error", "An unexpected error happened")
         else:
             saveGJP(generateGJP(password))
             del password
 
             self.destroy()
+
+        # if status[0] == "-1":
+        #     messagebox.showerror("Error", "An unexpected error happened")
+        # elif status[0] == "-2":
+        #     messagebox.showerror("Error", "The specified user does not exist")
+        # elif status[0] == "-3":
+        #     messagebox.showerror("Error", "Password is possibly incorrect. If this issue persists (even when the password is correct) report this issue to the GitHub")
+        # else:
+        #     saveGJP(generateGJP(password))
+        #     del password
+
+        #     self.destroy()
 
     def onClose(self) -> None:
         if self.disabled:

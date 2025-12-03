@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+from core.errors import *
 from core.user import logIn
 from core.saveFile import updateData
 from core.security import saveGJP, generateGJP
-from utils import changeFontSize
+from utils import changeFontSize, logger
 
 class LoginWindow(tk.Toplevel):
     def __init__(self, master, disabled: bool=False) -> None:
@@ -65,14 +66,15 @@ class LoginWindow(tk.Toplevel):
             messagebox.showerror("Error", "Incomplete details")
             return
 
-        status = logIn(username, password)
-
-        if status[0] == "-1":
-            messagebox.showerror("Error", "An unexpected error happened")
-        elif status[0] == "-2":
+        try:
+            status = logIn(username, password)
+        except NotFoundError:
             messagebox.showerror("Error", "The specified user does not exist")
-        elif status[0] == "-3":
+        except OperationFailedError:
             messagebox.showerror("Error", "Password is possibly incorrect. If this issue persists (even when the password is correct) report this issue to the GitHub")
+        except Exception as e:
+            logger.error(str(e))
+            messagebox.showerror("Error", "An unexpected error happened")
         else:
             messagebox.showinfo("Logged in", f"You are now logged in as @{username}")
             updateData(username=username, accID=status[1])
@@ -81,6 +83,21 @@ class LoginWindow(tk.Toplevel):
             del password
 
             self.destroy()
+
+        # if status[0] == "-1":
+        #     messagebox.showerror("Error", "An unexpected error happened")
+        # elif status[0] == "-2":
+        #     messagebox.showerror("Error", "The specified user does not exist")
+        # elif status[0] == "-3":
+        #     messagebox.showerror("Error", "Password is possibly incorrect. If this issue persists (even when the password is correct) report this issue to the GitHub")
+        # else:
+        #     messagebox.showinfo("Logged in", f"You are now logged in as @{username}")
+        #     updateData(username=username, accID=status[1])
+
+        #     saveGJP(generateGJP(password))
+        #     del password
+
+        #     self.destroy()
     
     def onClose(self) -> None:
         if self.disabled:
