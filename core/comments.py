@@ -129,9 +129,16 @@ def uploadComment(levelID: str, comment: str) -> int:
     # https://www.boomlings.com/database/uploadGJComment21.php
     response = requests.post(API + "uploadGJComment21.php", data=params, headers={"User-Agent": ""})
     
-    if not (200 <= response.status_code < 300) or response.text == "-1":
+    if not (200 <= response.status_code < 300):
+        if response.status_code == 403:
+            logger.error(f"Request to {API + 'uploadGJComment21.php'} returned a 403 error")
+            raise HTTPForbiddenError(f"Request to {API + 'uploadGJComment21.php'} returned a 403 error")
         logger.error(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
-        raise Exception(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
+        raise BoomlingsError(f"Failed to upload comment (status code: {response.status_code})")
+
+    if response.text == "-1":
+        logger.error(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
+        raise BoomlingsError(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
 
     lastUpload = time.time()
     return 0

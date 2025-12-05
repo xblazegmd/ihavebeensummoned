@@ -61,8 +61,10 @@ class ReplyBox(tk.Toplevel):
             uploadComment(self.levelID, comment)
         except CooldownError as c:
             messagebox.showerror("Too fast", f"You'll be able to comment again in {c.remaining} seconds")
-        except Exception as e:
+        except IHBSError:
             messagebox.showerror("Error", "Failed to upload comment")
+        except Exception as e:
+            messagebox.showerror("Error", f"An unexpected error occurred: {e}")
         else:
             messagebox.showinfo("Success!", "Uploaded comment successfully")
             self.destroy()
