@@ -52,7 +52,7 @@ class BoomlingsError(IHBSError):
 
 # Request to the API returned a 403 FORBIDDEN error
 # This usually happens when the request to the Boomlings endpoint is invalid (no www subdomain, non-empty User-Agent)
-class HTTPForbiddenError(IHBSError):
+class HTTPForbiddenError(BoomlingsError):
     """
     Request to the API returned a 403 FORBIDDEN error
 
