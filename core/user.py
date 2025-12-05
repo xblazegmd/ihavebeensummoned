@@ -11,12 +11,6 @@ def logIn(username: str, password: str) -> list[str]:
     
     You see, there is an endpoint to log in called `loginGJAccount.php`, but idk if there is any server backend worries or stuff so I'm not using that.
     So instead, I'll check if the user exists, and try and load DM's to verify the password (since that needs a password)
-
-    This code returns an `int` that will return 0 on success, and negative values on fail.
-    Here are some of the errors:
-    - -1: Unexcpected error
-    - -2: User does not exist
-    - -3: Failure to verify password (possibly incorrect)
     """
 
     # STEP 1: Verify if user exists

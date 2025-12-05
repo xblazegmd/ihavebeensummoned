@@ -90,11 +90,6 @@ cooldown = 15
 def uploadComment(levelID: str, comment: str) -> int:
     """
     Write and send a comment on the specified level
-
-    This code returns an `int` that will return 0 on success, and negative values on fail.
-    Here are some of the errors:
-    - -1: Unexpected error
-    - <-1: Cooldown (time remaining for next upload: (errCode * -1) - 1)
     """
     global lastUpload
 
