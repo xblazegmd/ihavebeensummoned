@@ -1,7 +1,7 @@
 import requests
 
 from .errors import *
-from utils import API, SECRET, HEADERS
+from utils import API, SECRET, HEADERS, logger
 from .formatReq import formatUserString
 from .security import generateGJP
 
@@ -28,7 +28,11 @@ def logIn(username: str, password: str) -> list[str]:
     usrResponse = requests.post(API + "getGJUsers20.php", data=usrParams, headers=HEADERS)
 
     if not (200 <= usrResponse.status_code < 300):
-        raise Exception("An unexpected error occured")
+        if usrResponse.status_code == 403:
+            logger.error(f"Request to {API + 'getGJUsers20.php'} returned a 403 error")
+            raise HTTPForbiddenError(f"Request to {API + 'getGJUsers20.php'} returned a 403 error")
+        logger.error(f"Request to {API + 'getGJUsers20.php'} failed with status code {usrResponse.status_code}")
+        raise BoomlingsError(f"Request to {API + 'getGJUsers20.php'} failed with status code {usrResponse.status_code}")
     
     if usrResponse.text == "-1":
         raise NotFoundError(f"User {username} was not found")
@@ -44,11 +48,6 @@ def verifyPassword(password: str, accID: int) -> str:
     Verify if the specified password is correct.
     
     For now it's verified by loading the player's DM's
-    
-    This code returns an `int` that will return 0 on success, and negative values on fail.
-    Here are some of the errors:
-    - -1: Unexpected error
-    - -3: Failure to verify password (possibly incorrect)
     """
     gjp = generateGJP(password)
 
@@ -60,9 +59,13 @@ def verifyPassword(password: str, accID: int) -> str:
     response = requests.post(API + "getGJMessages20.php", data=params, headers=HEADERS)
 
     if not (200 <= response.status_code < 300):
-        raise Exception("An unexpected error occured")
+        if response.status_code == 403:
+            logger.error(f"Request to {API + 'getGJUsers20.php'} returned a 403 error")
+            raise HTTPForbiddenError(f"Request to {API + 'getGJUsers20.php'} returned a 403 error")
+        logger.error(f"Request to {API + 'getGJUsers20.php'} failed with status code {response.status_code}")
+        raise BoomlingsError(f"Request to {API + 'getGJUsers20.php'} failed with status code {response.status_code}")
 
     if response.text == "-1":
-        raise OperationFailedError("Failure to verify password")
+        raise AuthError("Failed to verify password (possibly incorrect)")
 
     return gjp

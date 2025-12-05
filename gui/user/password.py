@@ -63,11 +63,13 @@ class PasswordPrompt(tk.Toplevel):
             return
 
         try:
-            status = logIn(self.username, password)
+            logIn(self.username, password)
         except NotFoundError:
             messagebox.showerror("Error", "The specified user does not exist")
-        except OperationFailedError:
+        except AuthError:
             messagebox.showerror("Error", "Password is possibly incorrect. If this issue persists (even when the password is correct) report this issue to the GitHub")
+        except BoomlingsError as b:
+            messagebox.showerror("Error", str(b))
         except Exception as e:
             logger.error(str(e))
             messagebox.showerror("Error", "An unexpected error happened")
@@ -76,18 +78,6 @@ class PasswordPrompt(tk.Toplevel):
             del password
 
             self.destroy()
-
-        # if status[0] == "-1":
-        #     messagebox.showerror("Error", "An unexpected error happened")
-        # elif status[0] == "-2":
-        #     messagebox.showerror("Error", "The specified user does not exist")
-        # elif status[0] == "-3":
-        #     messagebox.showerror("Error", "Password is possibly incorrect. If this issue persists (even when the password is correct) report this issue to the GitHub")
-        # else:
-        #     saveGJP(generateGJP(password))
-        #     del password
-
-        #     self.destroy()
 
     def onClose(self) -> None:
         if self.disabled:
