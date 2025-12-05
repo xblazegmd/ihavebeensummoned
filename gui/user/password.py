@@ -72,7 +72,7 @@ class PasswordPrompt(tk.Toplevel):
             messagebox.showerror("Error", str(b))
         except Exception as e:
             logger.error(str(e))
-            messagebox.showerror("Error", "An unexpected error happened")
+            messagebox.showerror("Error", "An unexpected error occurred. Plese report this issue to the GitHub, alongside the program's logs")
         else:
             saveGJP(generateGJP(password))
             del password

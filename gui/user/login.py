@@ -76,7 +76,7 @@ class LoginWindow(tk.Toplevel):
             messagebox.showerror("Error", str(b))
         except Exception as e:
             logger.error(str(e))
-            messagebox.showerror("Error", "An unexpected error happened")
+            messagebox.showerror("Error", "An unexpected error occurred. Plese report this issue to the GitHub, alongside the program's logs")
         else:
             messagebox.showinfo("Logged in", f"You are now logged in as @{username}")
             updateData(username=username, accID=status[1])

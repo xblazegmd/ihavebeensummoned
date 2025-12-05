@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox
 
 from core.comments import uploadComment
 from core.errors import *
+from utils import logger
 
 class ReplyBox(tk.Toplevel):
     def __init__(self, master, user: str, levelID: str, disabled: bool=False) -> None:
@@ -64,7 +65,8 @@ class ReplyBox(tk.Toplevel):
         except IHBSError:
             messagebox.showerror("Error", "Failed to upload comment")
         except Exception as e:
-            messagebox.showerror("Error", f"An unexpected error occurred: {e}")
+            logger.error(str(e))
+            messagebox.showerror("Error", f"An unexpected error occurred. Plese report this issue to the GitHub, alongside the program's logs")
         else:
             messagebox.showinfo("Success!", "Uploaded comment successfully")
             self.destroy()
