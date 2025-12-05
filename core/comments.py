@@ -5,6 +5,7 @@ import time
 
 from typing import Callable
 from utils import API, SECRET, notify, logger
+from .errors import *
 from .formatReq import *
 from .saveFile import loadData
 from .security import *
@@ -99,11 +100,8 @@ def uploadComment(levelID: str, comment: str) -> int:
 
     now = time.time()
     if now - lastUpload < cooldown:
-        # The error code for cooldown stuff is equal to the remaining time plus one, and negative
-        # Plus one to not conflict with the -1 error code
-        # So for example, error code -13 means you need to wait 12 seconds to comment
         remaining = int(cooldown - (now - lastUpload)) or 1 # "or 1" will make it so if the remaining time is 0 it puts it as 1 to avoid bugs
-        return (remaining + 1) * -1
+        raise CooldownError("Cooldown", remaining=remaining)
 
     data = loadData()
 
@@ -133,7 +131,7 @@ def uploadComment(levelID: str, comment: str) -> int:
     
     if not (200 <= response.status_code < 300) or response.text == "-1":
         logger.error(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
-        return -1
+        raise Exception(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
 
     lastUpload = time.time()
     return 0
