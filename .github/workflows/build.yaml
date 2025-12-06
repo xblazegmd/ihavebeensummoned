@@ -36,10 +36,25 @@ jobs:
           zip -r "ihavebeensummoned_macos.zip" "I Have Been Summoned.app"
       
       - name: Create release
+        if: '!contains(github.ref_name, "-")'
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
+          prerelease: false
+          body_path: CHANGELOG.md
+          files: dist/ihavebeensummoned_macos.zip
+
+      - name: Create pre-release
+        if: contains(github.ref_name, "-")
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          prerelease: true
+          body_path: CHANGELOG.md
           files: dist/ihavebeensummoned_macos.zip
