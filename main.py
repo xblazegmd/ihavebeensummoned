@@ -27,8 +27,6 @@ logger.addHandler(consoleHandler)
 logger.addHandler(fileHandler)
 
 def main() -> None:
-    logger.debug(f"Logging directory: {LOGDIR}")
-
     # Look for older log files
     maxLogs = 10
     oldLogs = sorted(
