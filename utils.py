@@ -1,11 +1,13 @@
 import logging
 import requests
+import sys
 import subprocess
 from tkinter import font, TclError
 from tkinter.ttk import Label
 
 from core import formatReq
 from core.errors import *
+from pathlib import Path
 
 logger = logging.getLogger("ihbs")
 FORMATTER = logging.Formatter(
@@ -13,9 +15,27 @@ FORMATTER = logging.Formatter(
     datefmt="%H:%M:%S"
 )
 
-API = "http://www.boomlings.com/database/" # Yes guys, GD runs on boomlings.com
+API = "http://www.boomlings.com/database/" # Yes, GD runs on boomlings.com
 SECRET = "Wmfd2893gb7" # RobTop's secret key for server requests (that is not a secret anymore lol)
 HEADERS = {"User-Agent": ""} # Empty User-Agent
+
+# For getting the root directory where to store the save file
+# If running as an .app, default to ~/Library/Application Support/IHaveBeenSummoned
+# If just running as "python main.py", default to where main.py is
+def getRootDir() -> Path:
+    """
+    For getting the program's root directory in which to store the save files.
+
+    If running as an .app, default to `~/Library/Application Support/IHaveBeenSummoned`
+
+    If just running as `python main.py`, default to where `main.py` is
+    """
+    if getattr(sys, "frozen", False):
+        root = Path.home() / "Library" / "Application Support" / "IHaveBeenSummoned"
+    else:
+        root = Path(sys.argv[0]).resolve().parent
+    root.mkdir(parents=True, exist_ok=True)
+    return root
 
 def notify(title: str, message: str) -> None:
     """

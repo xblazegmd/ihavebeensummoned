@@ -5,21 +5,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from core.errors import*
-from utils import logger
+from core.errors import *
+from utils import logger, getRootDir
 
-# For getting the root directory where to store the save file
-# If running as an .app, default to ~/Library/Application Support/IHaveBeenSummoned
-# If just running as "python main.py", default to where main.py is
-def getRoot() -> Path:
-    if getattr(sys, "frozen", False):
-        root = Path.home() / "Library" / "Application Support" / "IHaveBeenSummoned"
-    else:
-        root = Path(sys.argv[0]).resolve().parent
-    root.mkdir(parents=True, exist_ok=True)
-    return root
-
-SAVEFILE = getRoot() / "save.json"
+SAVEFILE = getRootDir() / "save.json"
 
 def saveData(data: dict) -> None:
     """
