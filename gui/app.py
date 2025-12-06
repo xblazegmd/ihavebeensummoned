@@ -4,6 +4,7 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 
+from core.errors import *
 from core.saveFile import saveData, loadData
 from .mainWin import MainWindow
 from .tagPrompt import TagPrompt
@@ -58,14 +59,19 @@ class App(tk.Tk):
         if devMode == "true":
             return -2 # Developer mode: ON
 
-        data = loadData()
+        try:
+            data = loadData()
 
-        if data.get("nonexistent") is not None or data.get("corrupted") is not None:
-            if data.get("corrupted") is not None and not messagebox.askyesno("Corrupted save file", "Your save file got corrupted. Do you want to generate a new one?"):
-                sys.exit(0)
-            saveData({}) # Initialize empty config file
-            return -1
+            if data == {}:
+                saveData({}) # Initialize empty file
+                return -1
         
-        if data.get("username") is None:
-            return 0
-        return 1
+            if data.get("username") is None:
+                return 0
+            return 1
+        except SFCorruptedError:
+            if not messagebox.askyesno("Corrupted save file", "Your save file got corrupted. Do you want to generate a new one?"):
+                sys.exit(0)
+            
+            saveData({}) # Reset data in save file
+            return -1

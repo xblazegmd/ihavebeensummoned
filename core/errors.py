@@ -66,3 +66,31 @@ class AuthError(IHBSError):
     Could not authenticate to the Geometry Dash servers
     """
     ...
+
+# ---------------------
+#   SAVE FILE ERRORS
+# ---------------------
+
+# Base class for all save file related errors
+class SaveFileError(IHBSError):
+    """
+    Base class for all save file related errors
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
+
+# Could not save data to the save file
+class SFWriteError(SaveFileError):
+    """
+    Could not save data to the save file
+    """
+    def __init__(self, *args):
+        super().__init__(*args)
+
+# Contents in the save file are corrupted
+class SFCorruptedError(SaveFileError):
+    """
+    Contents in the save file are corrupted
+    """
+    def __init__(self, *args):
+        super().__init__(*args)

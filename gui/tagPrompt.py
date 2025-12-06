@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+from core.errors import *
 from core.saveFile import updateData
-from utils import setBold
+from utils import setBold, logger
 
 class TagPrompt(tk.Toplevel):
     def __init__(self, master, disabled: bool=False):
@@ -90,7 +91,13 @@ class TagPrompt(tk.Toplevel):
 
         if not messagebox.askokcancel("Tags", f"The tags will be set to: {', '.join(self.tags)}"):
             return
-        updateData(tags=self.tags)
+        
+        try:
+            updateData(tags=self.tags)
+        except SFWriteError as s:
+            logger.error(str(s))
+            messagebox.showerror("Error", "Could not save data to the program's save file")
+            return
         self.destroy()
     
     def onClose(self) -> None:

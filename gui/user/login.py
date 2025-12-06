@@ -79,7 +79,13 @@ class LoginWindow(tk.Toplevel):
             messagebox.showerror("Error", "An unexpected error occurred. Plese report this issue to the GitHub, alongside the program's logs")
         else:
             messagebox.showinfo("Logged in", f"You are now logged in as @{username}")
-            updateData(username=username, accID=status[1])
+
+            try:
+                updateData(username=username, accID=status[1])
+            except SFWriteError as s:
+                logger.error(str(s))
+                messagebox.showerror("Error", "Could not save data to the program's save file")
+                return
 
             saveGJP(generateGJP(password))
             del password
