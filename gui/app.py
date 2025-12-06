@@ -9,6 +9,7 @@ from core.saveFile import saveData, loadData
 from .mainWin import MainWindow
 from .tagPrompt import TagPrompt
 from .user import LoginWindow, PasswordPrompt
+from utils import logger
 
 class App(tk.Tk):
     def __init__(self) -> None:
@@ -55,13 +56,13 @@ class App(tk.Tk):
         MainWindow(self, self.devMode)
     
     def getStatus(self) -> int:
-        devMode = os.getenv("IHBS_DEV_MODE", "false")
-        if devMode == "true":
+        data = loadData()
+        devMode = bool(data.get("devMode")) or bool(os.getenv("IHBS_DEV_MODE"))
+
+        if devMode == True:
             return -2 # Developer mode: ON
 
         try:
-            data = loadData()
-
             if data == {}:
                 saveData({}) # Initialize empty file
                 return -1
