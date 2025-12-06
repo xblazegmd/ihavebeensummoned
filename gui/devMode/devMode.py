@@ -30,7 +30,7 @@ class DeveloperMode(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.onClose)
 
         # Debug labels
-        version = ttk.Label(self, text="I Have Been Summoned v0.2-dev")
+        version = ttk.Label(self, text="I Have Been Summoned v0.2-alpha-1")
         version.pack(pady=5)
 
         self.uptime = ttk.Label(self, text="Uptime: 00:00:00")
