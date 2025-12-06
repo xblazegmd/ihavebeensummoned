@@ -144,7 +144,7 @@ class DeveloperMode(tk.Toplevel):
         logger.info(f"Mention by {username}: {msg}")
         notify(f"@{username} mentioned you", msg.replace("'", "'\\''"))
 
-        self.onMention(username, random.choice(msg))
+        self.onMention(username, msg)
 
     def openPrompt(self) -> None:
         Prompts(self.master)
