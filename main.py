@@ -2,6 +2,8 @@ import _tkinter
 import logging
 from gui import App
 
+from utils import FORMATTER
+
 # Setup logging
 logger = logging.getLogger("ihbs")
 logger.setLevel(logging.DEBUG)
@@ -9,11 +11,7 @@ logger.setLevel(logging.DEBUG)
 consoleHandler = logging.StreamHandler()
 consoleHandler.setLevel(logging.DEBUG)
 
-formatter = logging.Formatter(
-    fmt="[%(asctime)s] %(levelname)s: %(message)s",
-    datefmt="%H:%M:%S"
-)
-consoleHandler.setFormatter(formatter)
+consoleHandler.setFormatter(FORMATTER)
 
 logger.addHandler(consoleHandler)
 

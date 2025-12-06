@@ -8,6 +8,10 @@ from core import formatReq
 from core.errors import *
 
 logger = logging.getLogger("ihbs")
+FORMATTER = logging.Formatter(
+    fmt="[%(asctime)s] %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S"
+)
 
 API = "http://www.boomlings.com/database/" # Yes guys, GD runs on boomlings.com
 SECRET = "Wmfd2893gb7" # RobTop's secret key for server requests (that is not a secret anymore lol)

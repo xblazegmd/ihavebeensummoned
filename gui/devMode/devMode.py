@@ -15,7 +15,7 @@ from core.devModeLogHandler import DevModeLogHandler
 from core.saveFile import SAVEFILE
 from gui.listener import ListenerWindow
 from .prompts import Prompts
-from utils import logger, notify, getDailyLevel
+from utils import logger, notify, getDailyLevel, FORMATTER
 
 class DeveloperMode(tk.Toplevel):
     def __init__(self, master, onMention: Callable) -> None:
@@ -52,11 +52,7 @@ class DeveloperMode(tk.Toplevel):
         self.logHandler = DevModeLogHandler(self.log)
         self.logHandler.setLevel(logging.DEBUG)
 
-        formatter = logging.Formatter(
-            fmt="[%(asctime)s] %(levelname)s: %(message)s",
-            datefmt="%H:%M:%S"
-        )
-        self.logHandler.setFormatter(formatter)
+        self.logHandler.setFormatter(FORMATTER)
         
         logger.addHandler(self.logHandler)
 
