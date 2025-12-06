@@ -3,3 +3,4 @@ dist/
 save.json
 **/.DS_Store
 .venv
+logs/

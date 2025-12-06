@@ -19,7 +19,7 @@ API = "http://www.boomlings.com/database/" # Yes, GD runs on boomlings.com
 SECRET = "Wmfd2893gb7" # RobTop's secret key for server requests (that is not a secret anymore lol)
 HEADERS = {"User-Agent": ""} # Empty User-Agent
 
-# For getting the root directory where to store the save file
+# For getting the program's root directory in which to store the save files.
 # If running as an .app, default to ~/Library/Application Support/IHaveBeenSummoned
 # If just running as "python main.py", default to where main.py is
 def getRootDir() -> Path:
@@ -36,6 +36,8 @@ def getRootDir() -> Path:
         root = Path(sys.argv[0]).resolve().parent
     root.mkdir(parents=True, exist_ok=True)
     return root
+
+LOGDIR = getRootDir() / "logs"
 
 def notify(title: str, message: str) -> None:
     """
