@@ -5,6 +5,7 @@ from tkinter import font, TclError
 from tkinter.ttk import Label
 
 from core import formatReq
+from core.errors import *
 
 logger = logging.getLogger("ihbs")
 
@@ -35,8 +36,11 @@ def getDailyLevel() -> str:
     response = requests.post(API + "getGJLevels21.php", data=params, headers={"User-Agent": ""})
 
     if not (200 <= response.status_code < 300): # Not a success
+        if response.status_code == 403:
+            logger.error(f"Request to {API + 'getGJLevels21.php'} returned a 403 error")
+            raise HTTPForbiddenError(f"Request to {API + 'getGJLevels21.php'} returned a 403 error")
         logger.error(f"Failed to get daily level info (status code: {response.status_code})")
-        return "-1" # Why the heck did I put "sys.exit(1)" before? What's wrong with me???
+        raise BoomlingsError(f"Failed to get daily level info (status code: {response.status_code})")
     
     # Format response
     daily = response.text.split("#")[0].split("|")[0] # TLDR; get the first level in the response

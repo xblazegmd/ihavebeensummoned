@@ -5,6 +5,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from core.errors import*
+from utils import logger
+
 # For getting the root directory where to store the save file
 # If running as an .app, default to ~/Library/Application Support/IHaveBeenSummoned
 # If just running as "python main.py", default to where main.py is
@@ -25,20 +28,26 @@ def saveData(data: dict) -> None:
     WARNING: This will delete everything in the save file. For simple updates to the data, it's reccomended to use `updateData` instead.
     """
     with open(SAVEFILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        try:
+            json.dump(data, f, indent=4)
+        except Exception as e:
+            logger.error(f"Failed to save data to {SAVEFILE}: {e}")
+            raise SFWriteError(f"Failed to save data to {SAVEFILE}") from e
 
 def loadData() -> dict[Any, Any]:
     """
     Load the data from the save file and return it as a `dict`
     """
     if not os.path.exists(SAVEFILE):
-        return {"nonexistent": True}
+        return {}
     
     with open(SAVEFILE, "r", encoding="utf-8") as f:
         try:
             return json.load(f)
-        except json.JSONDecodeError:
-            return {"corrupted": True} # Corrupted save file
+        except json.JSONDecodeError as e:
+            logger.error(f"Data in '{SAVEFILE}' is corrupted (error info: {e})")
+            logger.info(f"Manual intervention is required")
+            raise SFCorruptedError(f"Data in '{SAVEFILE}' is corrupted. Manual intervention is required") from e
 
 def updateData(**kwargs) -> None:
     """

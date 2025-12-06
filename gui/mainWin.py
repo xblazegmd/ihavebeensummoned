@@ -3,6 +3,7 @@ from tkinter import messagebox, ttk
 from threading import Thread
 
 from core.comments import commentListenerLoop
+from core.errors import BoomlingsError
 from utils import getDailyLevel, logger
 from .devMode import DeveloperMode
 from .listener import ListenerWindow
@@ -36,7 +37,11 @@ class MainWindow:
         
             self.label.config(text=f"ID: {self.dailyID}")
             self.button.config(state=tk.ACTIVE)
+        except BoomlingsError as b:
+            self.label.config(text=f"Error: {b}")
         except Exception as e:
+            logger.error(str(e))
+            messagebox.showerror("Error", "An unexpected error occurred. Plese report this issue to the GitHub, alongside the program's logs")
             self.label.config(text=f"Error: {e}")
     
     def startListener(self) -> None:

@@ -5,6 +5,7 @@ import time
 
 from typing import Callable
 from utils import API, SECRET, notify, logger
+from .errors import *
 from .formatReq import *
 from .saveFile import loadData
 from .security import *
@@ -89,21 +90,13 @@ cooldown = 15
 def uploadComment(levelID: str, comment: str) -> int:
     """
     Write and send a comment on the specified level
-
-    This code returns an `int` that will return 0 on success, and negative values on fail.
-    Here are some of the errors:
-    - -1: Unexpected error
-    - <-1: Cooldown (time remaining for next upload: (errCode * -1) - 1)
     """
     global lastUpload
 
     now = time.time()
     if now - lastUpload < cooldown:
-        # The error code for cooldown stuff is equal to the remaining time plus one, and negative
-        # Plus one to not conflict with the -1 error code
-        # So for example, error code -13 means you need to wait 12 seconds to comment
         remaining = int(cooldown - (now - lastUpload)) or 1 # "or 1" will make it so if the remaining time is 0 it puts it as 1 to avoid bugs
-        return (remaining + 1) * -1
+        raise CooldownError("Cooldown", remaining=remaining)
 
     data = loadData()
 
@@ -131,9 +124,16 @@ def uploadComment(levelID: str, comment: str) -> int:
     # https://www.boomlings.com/database/uploadGJComment21.php
     response = requests.post(API + "uploadGJComment21.php", data=params, headers={"User-Agent": ""})
     
-    if not (200 <= response.status_code < 300) or response.text == "-1":
+    if not (200 <= response.status_code < 300):
+        if response.status_code == 403:
+            logger.error(f"Request to {API + 'uploadGJComment21.php'} returned a 403 error")
+            raise HTTPForbiddenError(f"Request to {API + 'uploadGJComment21.php'} returned a 403 error")
         logger.error(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
-        return -1
+        raise BoomlingsError(f"Failed to upload comment (status code: {response.status_code})")
+
+    if response.text == "-1":
+        logger.error(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
+        raise BoomlingsError(f"Failed to upload comment (status code: {response.status_code}, response: {response.text})")
 
     lastUpload = time.time()
     return 0

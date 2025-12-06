@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from core.comments import uploadComment
+from core.errors import *
+from utils import logger
 
 class ReplyBox(tk.Toplevel):
     def __init__(self, master, user: str, levelID: str, disabled: bool=False) -> None:
@@ -56,17 +58,18 @@ class ReplyBox(tk.Toplevel):
         contents = self.inputBVar.get()
         comment = f"{user} {contents}"
 
-        status = uploadComment(self.levelID, comment)
-
-        if status == -1:
+        try:
+            uploadComment(self.levelID, comment)
+        except CooldownError as c:
+            messagebox.showerror("Too fast", f"You'll be able to comment again in {c.remaining} seconds")
+        except IHBSError:
             messagebox.showerror("Error", "Failed to upload comment")
-        elif status < -1:
-            remaining = (status * -1) - 1 # Or in simple terms, the error code but positive minus 1 to not conflict with the -1 error code
-            messagebox.showerror("Too fast", f"You'll be able to comment again in {remaining} seconds")
-            return # DO NOT DESTROY
+        except Exception as e:
+            logger.error(str(e))
+            messagebox.showerror("Error", f"An unexpected error occurred. Plese report this issue to the GitHub, alongside the program's logs")
         else:
             messagebox.showinfo("Success!", "Uploaded comment successfully")
-        self.destroy()
+            self.destroy()
 
     def characterCountUpdate(self, *_) -> bool:
         chars = len(self.inputA.get()) + len(self.inputBVar.get()) + 1
