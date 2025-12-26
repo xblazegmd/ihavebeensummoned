@@ -4,7 +4,7 @@ import sys
 import time
 
 from typing import Callable
-from utils import API, SECRET, notify, logger
+from utils import API, SECRET, notify, logger, containsWord
 from .errors import *
 from .formatReq import *
 from .saveFile import loadData
@@ -64,7 +64,7 @@ def commentListener(id: str, lastTags: list, onMention: Callable) -> None:
             continue
 
         # If I ever get tagged it'll notify me
-        if any(tag in string.lower() for tag in possibleTags):
+        if any(containsWord(string.lower(), tag) for tag in possibleTags):
             if string in lastTags:
                 continue # Should have already been notified abt this comment
 

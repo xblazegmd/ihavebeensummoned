@@ -103,3 +103,25 @@ def setBold(label: Label) -> font.Font:
     nfnt = fnt.copy() # Make a copy of it
     nfnt.configure(weight="bold") # Change the font size
     return nfnt
+
+def containsWord(text: str, contains: str) -> bool:
+    pieces = text.split(" ")
+    for piece in pieces:
+        pieceClean = cleanNameString(piece)
+        if (pieceClean == contains):
+            return True
+    return False
+
+def cleanString(text: str) -> str:
+    res: str = ""
+
+    for c in text:
+        if (c.isalnum()):
+            res += c
+
+    return res
+
+def cleanNameString(name: str) -> str:
+    clean = name.removesuffix("'")
+    clean = name.removesuffix("'s")
+    return cleanString(clean)
