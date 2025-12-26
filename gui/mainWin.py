@@ -18,7 +18,7 @@ class MainWindow:
         self.root.resizable(False, False)
 
         self.label = ttk.Label(self.root, text="Getting daily level info...")
-        self.button = ttk.Button(self.root, text="Start listener", state=tk.DISABLED, command=self.startListener)
+        self.button = ttk.Button(self.root, text="Start Listening", state=tk.DISABLED, command=self.startListener)
 
         self.label.pack(pady=20)
         self.button.pack(pady=20)
@@ -57,9 +57,9 @@ class MainWindow:
             Thread(target=commentListenerLoop, args=(self.dailyID, listenerWindow.addMention), daemon=True).start()
 
         if not self.devMode:
-            self.button.config(text="Listener Running", state=tk.DISABLED)
-            logger.info(f"Listener started on ID: {self.dailyID}")
-            messagebox.showinfo("Listener started", f"Listener is currently running on ID: {self.dailyID}")
+            self.button.config(text="Started", state=tk.DISABLED)
+            logger.info(f"Started program on ID: {self.dailyID}")
+            messagebox.showinfo("Started program", f"Listener is currently running on ID: {self.dailyID}")
 
         self.root.withdraw()
         listenerWindow.deiconify()

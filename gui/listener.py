@@ -49,7 +49,7 @@ class ListenerWindow(tk.Toplevel):
         itemID = selectedItem[0]
         itemValues = self.mentions.item(itemID, "values")
 
-        replyBox = ReplyBox(self.master, itemValues[0], self.levelID)
+        ReplyBox(self.master, itemValues[0], self.levelID)
     
     def onClose(self) -> None:
         if messagebox.askyesno("Are you sure?", "Do you want to exit?"):
